@@ -1,293 +1,246 @@
 <!DOCTYPE html>
-<!-- original:https://codepen.io/boudra/pen/raErwP -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar</title>
+    <title>Dark Mode Calendar</title>
 
     <style>
         body {
-    font-family: monospace;
+            font-family: monospace;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text */
+        }
 
-}
+        #calendar {
+            margin: 0 auto;
+            font-size: 12px;
+        }
 
-.wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    min-height: 100%;
-}
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            position: absolute;
+            background-color: #1e1e1e; /* Darker table background */
+            border: 1px solid #333333; /* Subtle border */
+            box-shadow: 2px 2px 10px 0px #000000; /* Slight shadow */
+            border-radius: 5px;
+        }
 
+        .month {
+            background-color: #333333; /* Dark header */
+            color: #ffffff;
+            font-size: 1.2em;
+        }
 
-#calendar {
-    margin:  0 auto;
-    font-size: 14px;
-}
-table {
-    border-collapse: collapse;
-    table-layout: fixed;
-    position: absolute;
-    background-color: #fff;
-    border: 2px solid #000000;
-    box-shadow: 2px 2px 1px 0px #000000;
-    border-radius: 5px;
-}
+        .year {
+            font-size: 10px;
+            font-weight: normal;
+            display: block;
+            text-shadow: none;
+            color: #bdbdbd; /* Subtle text color for the year */
+        }
 
-.month{
-    background-color: #000;
-    color: #fff;
-    font-size: 1.5em;
-}
-.year {
-    font-size: 12px;
-    font-weight: normal;
-    display: block;
-    text-shadow: none;
-    color: #fff;
-}
+        .day-header {
+            background-color: #424242; /* Dark day header background */
+            color: #e0e0e0;
+        }
 
-.day-header{
-    background-color: #f3fff3;
-}
+        td, th {
+            text-align: center;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
 
-td,th {
-    text-align: center;
-    background-color: #fff;
-}
-th {
-    padding: 10px;
-    /* background-color: #000000;
-    color: #fff; */
-    /* font-weight: normal; */
-}
+        th {
+            padding: 5px;
+        }
 
+        td {
+            padding: 0;
+            border-bottom: 1px solid #333333;
+        }
 
+        td > span {
+            color: #e0e0e0;
+            padding: 5px;
+            display: block;
+            border: 1px solid transparent;
+            transition: border 0.3s ease, background-color 0.3s ease;
+        }
 
+        td.avui > span {
+            font-weight: bold;
+            background-color: #6200ea; /* Highlight for the current day */
+            color: #ffffff;
+        }
 
-td {
-    padding: 0;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-td>span {
-    color: rgb(0, 0, 0);
-    padding: 10px;
-    display: block;
-    border: 2px solid transparent;
-    transition: border 0.3s ease;
-}
+        td.fora > span {
+            opacity: 0.4; /* Dims dates outside the current month */
+        }
 
+        td > span:hover {
+            border-color: #6200ea; /* Subtle hover effect */
+            background-color: #333333;
+        }
 
-td.avui>span {
-    font-weight: bold;
-    background-color: #000000;
-    color: #fff;
-}
-td.fora > span {
-    opacity: 0.2;
-}
+        .boto-next, .boto-prev {
+            background: #333333; /* Dark button background */
+            color: #ffffff;
+            font-family: inherit;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 2px 8px;
+            line-height: 1px;
+            height: 25px;
+            width: 25px;
+            vertical-align: middle;
+            position: absolute;
+            top: 10px;
+        }
 
+        .boto-next {
+            right: 8px;
+        }
 
-.boto-next, .boto-prev {
-    background: #000;
-    color: #fff;
-    font-family: inherit;
-    border: none;
-    font-size: 25px;
-    font-weight: bold;
-    text-shadow: inherit;
-    padding: 2px 10px 5px 10px;
-    line-height: 1px;
-    height: 30px;
-    width: 30px;
-    vertical-align: middle;
-    position: absolute;
-    top: 15px;
-}
-.boto-next { right: 10px; padding-left: 13px; }
-.boto-prev { left: 10px; padding-right: 13px;}
+        .boto-prev {
+            left: 8px;
+        }
 
-
+        .boto-next:hover, .boto-prev:hover {
+            background-color: #6200ea; /* Button hover effect */
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
     <div class="">
         <div id="calendar"></div>
-      </div>
-      <script>
+    </div>
+    <script>
+        /* JavaScript remains unchanged */
         var months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-];
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
 
-var days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wedensday',
-    'Thursday',
-    'Friday',
-    'Saturday'
-];
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var days_abr = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-var days_abr = [
-    'Su',
-    'Mo',
-    'Tu',
-    'We',
-    'Th',
-    'Fr',
-    'Sa'
-];
+        Number.prototype.pad = function (num) {
+            var str = '';
+            for (var i = 0; i < (num - this.toString().length); i++)
+                str += '0';
+            return str += this.toString();
+        };
 
-Number.prototype.pad = function(num) {
-    var str = '';
-    for(var i = 0; i < (num-this.toString().length); i++)
-        str += '0';
-    return str += this.toString();
-}
+        function calendar(widget, data) {
+            /* Calendar rendering logic remains unchanged */
+            var original = widget.getElementsByClassName('actiu')[0];
 
-function calendar(widget, data)
-{
+            if (typeof original === 'undefined') {
+                original = document.createElement('table');
+                original.setAttribute('data-actual', data.getFullYear() + '/' +
+                    data.getMonth().pad(2) + '/' +
+                    data.getDate().pad(2));
+                widget.appendChild(original);
+            }
 
-    var original = widget.getElementsByClassName('actiu')[0];
+            var diff = data - new Date(original.getAttribute('data-actual'));
+            diff = new Date(diff).getMonth();
 
-    if(typeof original === 'undefined')
-    {
-        original = document.createElement('table');
-        original.setAttribute('data-actual',
-			      data.getFullYear() + '/' +
-			      data.getMonth().pad(2) + '/' +
-			      data.getDate().pad(2))
-        widget.appendChild(original);
-    }
+            var e = document.createElement('table');
+            e.className = diff === 0 ? 'amagat-esquerra' : 'amagat-dreta';
+            e.innerHTML = '';
 
-    var diff = data - new Date(original.getAttribute('data-actual'));
+            widget.appendChild(e);
 
-    diff = new Date(diff).getMonth();
+            e.setAttribute('data-actual',
+                data.getFullYear() + '/' +
+                data.getMonth().pad(2) + '/' +
+                data.getDate().pad(2));
 
-    var e = document.createElement('table');
+            var fila = document.createElement('tr');
+            var titol = document.createElement('th');
+            titol.setAttribute('colspan', 7);
+            titol.setAttribute('class', 'month');
 
-    e.className = diff  === 0 ? 'amagat-esquerra' : 'amagat-dreta';
-    e.innerHTML = '';
+            var boto_prev = document.createElement('button');
+            boto_prev.className = 'boto-prev';
+            boto_prev.innerHTML = '&#9666;';
 
-    widget.appendChild(e);
+            var boto_next = document.createElement('button');
+            boto_next.className = 'boto-next';
+            boto_next.innerHTML = '&#9656;';
 
-    e.setAttribute('data-actual',
-                   data.getFullYear() + '/' +
-                   data.getMonth().pad(2) + '/' +
-                   data.getDate().pad(2))
+            titol.appendChild(boto_prev);
+            titol.appendChild(document.createElement('span')).innerHTML =
+                months[data.getMonth()] + '<span class="year">' + data.getFullYear() + '</span>';
 
-    var fila = document.createElement('tr');
-    var titol = document.createElement('th');
-    titol.setAttribute('colspan', 7);
-    titol.setAttribute('class','month');
+            titol.appendChild(boto_next);
 
-    var boto_prev = document.createElement('button');
-    boto_prev.className = 'boto-prev';
-    boto_prev.innerHTML = '&#9666;';
+            boto_prev.onclick = function () {
+                data.setMonth(data.getMonth() - 1);
+                calendar(widget, data);
+            };
 
-    var boto_next = document.createElement('button');
-    boto_next.className = 'boto-next';
-    boto_next.innerHTML = '&#9656;';
+            boto_next.onclick = function () {
+                data.setMonth(data.getMonth() + 1);
+                calendar(widget, data);
+            };
 
-    titol.appendChild(boto_prev);
-    titol.appendChild(document.createElement('span')).innerHTML = 
-        months[data.getMonth()] + '<span class="year">' + data.getFullYear() + '</span>';
+            fila.appendChild(titol);
+            e.appendChild(fila);
 
-    titol.appendChild(boto_next);
+            fila = document.createElement('tr');
 
-    boto_prev.onclick = function() {
-        data.setMonth(data.getMonth() - 1);
-        calendar(widget, data);
-    };
+            for (var i = 1; i < 7; i++) {
+                fila.innerHTML += '<th class="day-header">' + days_abr[i] + '</th>';
+            }
 
-    boto_next.onclick = function() {
-        data.setMonth(data.getMonth() + 1);
-        calendar(widget, data);
-    };
+            fila.innerHTML += '<th class="day-header">' + days_abr[0] + '</th>';
+            e.appendChild(fila);
 
-    fila.appendChild(titol);
-    e.appendChild(fila);
+            var inici_mes = new Date(data.getFullYear(), data.getMonth(), -1).getDay();
+            var actual = new Date(data.getFullYear(), data.getMonth(), -inici_mes);
 
-    fila = document.createElement('tr');
+            for (var s = 0; s < 6; s++) {
+                var fila = document.createElement('tr');
+                for (var d = 1; d < 8; d++) {
+                    var cela = document.createElement('td');
+                    var span = document.createElement('span');
 
-    for(var i = 1; i < 7; i++)
-    {
-        fila.innerHTML += '<th class="day-header">' + days_abr[i] + '</th>';
-    }
+                    cela.appendChild(span);
+                    span.innerHTML = actual.getDate();
 
-    fila.innerHTML += '<th class="day-header">' + days_abr[0] + '</th>';
-    e.appendChild(fila);
+                    if (actual.getMonth() !== data.getMonth())
+                        cela.className = 'fora';
 
-    /* Obtinc el dia que va acabar el mes anterior */
-    var inici_mes =
-        new Date(data.getFullYear(), data.getMonth(), -1).getDay();
+                    if (data.getDate() == actual.getDate() && data.getMonth() == actual.getMonth())
+                        cela.className = 'avui';
 
-    var actual = new Date(data.getFullYear(),
-			  data.getMonth(),
-			  -inici_mes);
+                    actual.setDate(actual.getDate() + 1);
+                    fila.appendChild(cela);
+                }
+                e.appendChild(fila);
+            }
 
-    /* 6 setmanes per cobrir totes les posiblitats
-     *  Quedaria mes consistent alhora de mostrar molts mesos 
-     *  en una quadricula */
-    for(var s = 0; s < 6; s++)
-    {
-        var fila = document.createElement('tr');
+            setTimeout(function () {
+                e.className = 'actiu';
+                original.className += diff === 0 ? ' amagat-dreta' : ' amagat-esquerra';
+            }, 20);
 
-        for(var d = 1; d < 8; d++)
-        {
-	    var cela = document.createElement('td');
-	    var span = document.createElement('span');
+            original.className = 'inactiu';
 
-	    cela.appendChild(span);
-
-            span.innerHTML = actual.getDate();
-
-            if(actual.getMonth() !== data.getMonth())
-                cela.className = 'fora';
-
-            /* Si es avui el decorem */
-            if(data.getDate() == actual.getDate() &&
-	       data.getMonth() == actual.getMonth())
-		cela.className = 'avui';
-
-	    actual.setDate(actual.getDate()+1);
-            fila.appendChild(cela);
+            setTimeout(function () {
+                var inactius = document.getElementsByClassName('inactiu');
+                for (var i = 0; i < inactius.length; i++)
+                    widget.removeChild(inactius[i]);
+            }, 1000);
         }
 
-        e.appendChild(fila);
-    }
-
-    setTimeout(function() {
-        e.className = 'actiu';
-        original.className +=
-        diff === 0 ? ' amagat-dreta' : ' amagat-esquerra';
-    }, 20);
-
-    original.className = 'inactiu';
-
-    setTimeout(function() {
-        var inactius = document.getElementsByClassName('inactiu');
-        for(var i = 0; i < inactius.length; i++)
-            widget.removeChild(inactius[i]);
-    }, 1000);
-
-}
-
-calendar(document.getElementById('calendar'), new Date());
-
+        calendar(document.getElementById('calendar'), new Date());
     </script>
 </body>
 </html>
